@@ -102,24 +102,51 @@ button:active {
   transform: scale(0.98);
 }
 
-    li { margin: 12px 0; overflow-wrap: anywhere; }
-    .amount { font-weight: bold; }
+    
+li {
+  margin: 12px 0;
+  padding: 12px;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  border-radius: 12px;
+  background: #f4f8fb;
+  border: 1px solid #e5edf5;
+}
+
+.amount {
+  font-weight: 700;
+  color: #168b80;
+}
+
  
+
 .due-calendar {
   margin-top: 20px;
-  padding: 16px;
+  padding: 20px;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5edf5;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(18, 59, 93, 0.07);
 }
+
+
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5edf5;
 }
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+}
+
 
 .calendar-header h3 {
   margin: 0;
@@ -152,26 +179,49 @@ button:active {
   overflow-wrap: anywhere;
 }
 
+
 .calendar-day.has-bill {
-  background: #dbeafe;
-  border-color: #2563eb;
-  font-weight: bold;
+  background: #d9f5ef;
+  border-color: #22a699;
+  color: #126b62;
+  font-weight: 700;
 }
+
+
 
 .calendar-day.selected {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #168b80;
+  outline-offset: 1px;
+  background: #e8f8f5;
+  font-weight: 700;
 }
 
-.calendar-day.today {
-  border: 2px solid #16a34a;
+
+
+.calendar-day {
+  min-height: 48px;
+  padding: 5px 2px;
+  border: 1px solid #e5edf5;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  background: #ffffff;
+  color: #123b5d;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
+
+
 
 .calendar-weekday {
-  font-weight: bold;
+  font-weight: 700;
   text-align: center;
-  padding: 6px 0;
+  padding: 8px 0;
   font-size: 12px;
+  color: #64748b;
+  letter-spacing: 0.3px;
 }
+
 
 #calendarBills {
   margin-top: 14px;
@@ -216,6 +266,26 @@ body.dark-mode p,
 body.dark-mode li {
   color: #f1f5f9;
 }
+h1, h2, h3 {
+  color: #123b5d;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
  </style>
 </head>
 <body>
