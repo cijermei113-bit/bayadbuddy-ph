@@ -63,7 +63,31 @@ if ("serviceWorker" in navigator) {
     <h1>💙 BayadBuddy PH</h1>
     <p>Track your bills and due dates.</p>
     <h2>Total unpaid: <span id="total">₱0.00</span></h2>
+  
+<div class="dashboard">
+  <h2>Monthly Bills Dashboard</h2>
+
+  <div class="dashboard-card">
+    <h3>This Month's Bills</h3>
+    <p id="monthlyTotal">₱0.00</p>
   </div>
+
+  <div class="dashboard-card">
+    <h3>Paid Bills</h3>
+    <p id="monthlyPaid">₱0.00</p>
+  </div>
+
+  <div class="dashboard-card">
+    <h3>Unpaid Bills</h3>
+    <p id="monthlyUnpaid">₱0.00</p>
+  </div>
+
+  <div class="dashboard-card">
+    <h3>Overdue Bills</h3>
+    <p id="monthlyOverdue">0 bills</p>
+  </div>
+</div>
+</div>
 
   <div class="card">
     <h2>➕ Add a bill</h2>
@@ -98,6 +122,51 @@ function render() {
       .toLocaleString("en-PH", {
         style: "currency", currency: "PHP"
       });
+
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const monthlyBills = bills.filter(bill => {
+      if (!bill.due) return false;
+
+      const dueDate = new Date(bill.due + "T00:00:00");
+
+      return !isNaN(dueDate.getTime()) &&
+        dueDate.getMonth() === currentMonth &&
+        dueDate.getFullYear() === currentYear;
+    });
+
+    const formatPHP = amount =>
+      amount.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP"
+      });
+
+    document.getElementById("monthlyTotal").textContent =
+      formatPHP(monthlyBills.reduce((sum, bill) => sum + bill.amount, 0));
+
+    document.getElementById("monthlyPaid").textContent =
+      formatPHP(monthlyBills.filter(bill => bill.paid)
+        .reduce((sum, bill) => sum + bill.amount, 0));
+
+    document.getElementById("monthlyUnpaid").textContent =
+      formatPHP(monthlyBills.filter(bill => !bill.paid)
+        .reduce((sum, bill) => sum + bill.amount, 0));
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const overdueCount = monthlyBills.filter(bill => {
+      if (bill.paid) return false;
+
+      const dueDate = new Date(bill.due + "T00:00:00");
+      dueDate.setHours(0, 0, 0, 0);
+
+      return dueDate < today;
+    }).length;
+
+    document.getElementById("monthlyOverdue").textContent =
+      overdueCount + (overdueCount === 1 ? " bill" : " bills");
 
   const list = document.getElementById("bills");
   list.replaceChildren();
