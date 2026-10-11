@@ -174,6 +174,34 @@ document.getElementById("form").addEventListener("submit", event => {
 });
 
 render();
+
+function checkDueReminders() {
+  if (!("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dueBills = bills.filter(bill => {
+    if (bill.paid || !bill.due) return false;
+
+    const dueDate = new Date(bill.due + "T00:00:00");
+    if (isNaN(dueDate.getTime())) return false;
+
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate.getTime() <= today.getTime();
+  });
+
+  if (dueBills.length > 0) {
+    new Notification("BayadBuddy PH: Bill Reminder", {
+      body: dueBills.length === 1
+        ? "May 1 unpaid bill na due today o overdue. Buksan ang app para tingnan."
+        : "May " + dueBills.length + " unpaid bills na due today o overdue. Buksan ang app para tingnan."
+    });
+  }
+}
+
+checkDueReminders();
 </script>
 
 <button id="exportBillsBtn" type="button">Export Bills (Backup)</button>
