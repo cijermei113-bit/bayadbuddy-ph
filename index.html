@@ -609,6 +609,21 @@ body.dark-mode li div {
     <h2>🧾 My bills</h2>
     <ul id="bills"></ul>
   </div>
+
+<section class="card" id="backup-section">
+  <h2>Backup & Restore</h2>
+  <p>Save your bills or restore them from a backup file.</p>
+
+  <button type="button" id="export-backup">
+    Export Backup
+  </button>
+
+  <input
+    type="file"
+    id="import-backup"
+    accept=".json,application/json"
+  />
+</section>
 </main>
 <script>
 if ("serviceWorker" in navigator) {
@@ -1100,6 +1115,97 @@ document.getElementById("enableRemindersBtn").addEventListener("click", async fu
     message.textContent = "Hindi pinayagan ang notifications. Maaari mo itong baguhin sa browser settings.";
   }
 });
+</script>
+
+<script>
+(function () {
+  const STORAGE_KEY = "bayadbuddy-bills";
+
+  const exportButton = document.getElementById("export-backup");
+  const importInput = document.getElementById("import-backup");
+
+  if (!exportButton || !importInput) return;
+
+  exportButton.addEventListener("click", function () {
+    const savedBills = localStorage.getItem(STORAGE_KEY);
+
+    if (!savedBills) {
+      alert("Walang bill data na maaaring i-backup.");
+      return;
+    }
+
+    try {
+      const bills = JSON.parse(savedBills);
+
+      if (!Array.isArray(bills)) {
+        alert("Hindi valid ang bill data.");
+        return;
+      }
+
+      const blob = new Blob(
+        [JSON.stringify(bills, null, 2)],
+        { type: "application/json" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "bayadbuddy-bills-backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      alert("Backup downloaded successfully!");
+    } catch (error) {
+      alert("Hindi mabasa ang bill data para sa backup.");
+    }
+  });
+
+  importInput.addEventListener("change", async function () {
+    const file = importInput.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const importedBills = JSON.parse(text);
+
+      if (
+        !Array.isArray(importedBills) ||
+        !importedBills.every(function (bill) {
+          return bill &&
+            typeof bill === "object" &&
+            !Array.isArray(bill) &&
+            typeof bill.name === "string" &&
+            typeof bill.amount === "number" &&
+            typeof bill.due === "string" &&
+            typeof bill.paid === "boolean";
+        })
+      ) {
+        alert("Invalid backup file. Walang nabagong data.");
+        return;
+      }
+
+      const confirmed = confirm(
+        "I-restore ang backup? Papalitan nito ang kasalukuyang bill records."
+      );
+
+      if (!confirmed) return;
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(importedBills)
+      );
+
+      alert("Backup restored successfully!");
+      window.location.reload();
+    } catch (error) {
+      alert("Hindi mabuksan ang backup file. Walang nabagong data.");
+    } finally {
+      importInput.value = "";
+    }
+  });
+})();
 </script>
 </body>
 
