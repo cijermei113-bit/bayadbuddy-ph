@@ -237,12 +237,16 @@ body.dark-mode {
   color: #f1f5f9;
 }
 
+
 body.dark-mode .container,
 body.dark-mode .card,
 body.dark-mode section {
   background-color: #1e293b;
   color: #f1f5f9;
+  border-color: #334155;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
+
 
 body.dark-mode input,
 body.dark-mode select,
@@ -256,6 +260,16 @@ body.dark-mode button {
   background-color: #334155;
   color: #ffffff;
   border-color: #475569;
+}
+
+body.dark-mode li {
+  background: #273449;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+body.dark-mode .amount {
+  color: #5eead4;
 }
 
 body.dark-mode h1,
@@ -284,6 +298,33 @@ h2 {
 
 h3 {
   font-size: 17px;
+}
+
+body.dark-mode .due-calendar {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+body.dark-mode .calendar-day {
+  background: #273449;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+body.dark-mode .calendar-day.has-bill {
+  background: #134e4a;
+  border-color: #2dd4bf;
+  color: #ccfbf1;
+}
+
+body.dark-mode .calendar-day.selected {
+  outline-color: #5eead4;
+  background: #164e63;
+}
+
+body.dark-mode .calendar-weekday {
+  color: #cbd5e1;
 }
 
  </style>
