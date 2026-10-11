@@ -169,6 +169,14 @@ li {
   cursor: pointer;
 }
 
+.calendar-header button:hover {
+  background: #168b80;
+}
+
+.calendar-day:hover {
+  border-color: #22a699;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -331,6 +339,60 @@ body.dark-mode .calendar-day.selected {
 
 body.dark-mode .calendar-weekday {
   color: #cbd5e1;
+}
+
+body.dark-mode .calendar-header button:hover {
+  background: #0f766e;
+}
+
+body.dark-mode .calendar-day:hover {
+  border-color: #5eead4;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .due-calendar {
+    padding: 12px;
+    border-radius: 16px;
+  }
+}
+
+/* Bill status labels */
+.status-label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.status-paid {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-due-soon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-overdue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-upcoming {
+  background: #dbeafe;
+  color: #1e40af;
 }
 
  </style>
@@ -534,9 +596,46 @@ if (!bill.due || isNaN(dueDate.getTime())) {
   }
 }
 
-details.textContent = "Due: " + bill.due +
-  (bill.paid ? " · PAID" : " · UNPAID") +
-  (bill.paid ? "" : dueStatus);
+
+details.textContent = "Due: " + bill.due;
+
+const status = document.createElement("span");
+status.classList.add("status-label");
+
+let statusText = "";
+
+if (!bill.due || isNaN(new Date(bill.due + "T00:00:00").getTime())) {
+  statusText = "INVALID DUE DATE";
+} else if (bill.paid) {
+  statusText = "PAID";
+  status.classList.add("status-paid");
+} else {
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
+  const billDueDate = new Date(bill.due + "T00:00:00");
+  billDueDate.setHours(0, 0, 0, 0);
+
+  const daysLeft = Math.round(
+    (billDueDate.getTime() - todayDate.getTime()) / 86400000
+  );
+
+  if (daysLeft < 0) {
+    statusText = "OVERDUE";
+    status.classList.add("status-overdue");
+  } else if (daysLeft <= 3) {
+    statusText = daysLeft === 0 ? "DUE TODAY" : "DUE SOON";
+    status.classList.add("status-due-soon");
+  } else {
+    statusText = "UPCOMING";
+    status.classList.add("status-upcoming");
+  }
+}
+
+status.textContent = statusText;
+details.appendChild(document.createElement("br"));
+details.appendChild(status);
+
 ;
     const toggle = document.createElement("button");
     toggle.textContent = bill.paid
