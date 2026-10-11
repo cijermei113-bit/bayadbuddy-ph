@@ -11,16 +11,7 @@
   <title>BayadBuddy PH</title>
   <style>
    
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js")
-      .catch((error) => {
-        console.error("Service worker registration failed:", error);
-      });
-  });
-}
-</script>
+
  body {
       font-family: Arial, sans-serif;
       background: #f2f7fa;
@@ -255,7 +246,16 @@ body.dark-mode li {
     <ul id="bills"></ul>
   </div>
 </main>
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .catch((error) => {
+        console.error("Service worker registration failed:", error);
+      });
+  });
+}
+</script>
 <script>
 let bills = [];
 try {
