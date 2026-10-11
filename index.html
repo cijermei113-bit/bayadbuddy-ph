@@ -245,8 +245,6 @@ document.getElementById("form").addEventListener("submit", event => {
 render();
 
 function checkDueReminders() {
-  
-function checkDueReminders() {
   if (!("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
 
