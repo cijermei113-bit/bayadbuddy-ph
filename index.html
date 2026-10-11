@@ -55,7 +55,83 @@ if ("serviceWorker" in navigator) {
     }
     li { margin: 12px 0; overflow-wrap: anywhere; }
     .amount { font-weight: bold; }
-  </style>
+ 
+.due-calendar {
+  margin-top: 20px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+}
+
+.calendar-header button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.calendar-day {
+  min-height: 48px;
+  padding: 5px 2px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.calendar-day.has-bill {
+  background: #dbeafe;
+  border-color: #2563eb;
+  font-weight: bold;
+}
+
+.calendar-day.selected {
+  outline: 2px solid #2563eb;
+}
+
+.calendar-day.today {
+  border: 2px solid #16a34a;
+}
+
+.calendar-weekday {
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+#calendarBills {
+  margin-top: 14px;
+}
+
+#calendarBills p {
+  margin: 6px 0;
+}
+ </style>
 </head>
 <body>
 <main>
@@ -87,6 +163,19 @@ if ("serviceWorker" in navigator) {
     <p id="monthlyOverdue">0 bills</p>
   </div>
 </div>
+</div>
+
+<div class="due-calendar">
+  <h2>📅 Bill Due Date Calendar</h2>
+  <div class="calendar-header">
+    <button type="button" id="prevMonth">❮</button>
+    <h3 id="calendarMonth"></h3>
+    <button type="button" id="nextMonth">❯</button>
+  </div>
+  <div class="calendar-grid" id="calendarDays"></div>
+  <div id="calendarBills">
+    <p>Pumili ng petsa para makita ang mga bill.</p>
+  </div>
 </div>
 
   <div class="card">
@@ -243,6 +332,113 @@ document.getElementById("form").addEventListener("submit", event => {
 });
 
 render();
+
+const calendarMonth = document.getElementById("calendarMonth");
+const calendarDays = document.getElementById("calendarDays");
+const calendarBills = document.getElementById("calendarBills");
+
+let calendarDate = new Date();
+let selectedCalendarDate = "";
+
+function renderDueCalendar() {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+
+  calendarMonth.textContent = calendarDate.toLocaleDateString("en-PH", {
+    month: "long",
+    year: "numeric"
+  });
+
+  calendarDays.replaceChildren();
+
+  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => {
+    const heading = document.createElement("div");
+    heading.className = "calendar-weekday";
+    heading.textContent = day;
+    calendarDays.appendChild(heading);
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+
+  for (let i = 0; i < firstDay; i++) {
+    calendarDays.appendChild(document.createElement("div"));
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateKey = [
+      year,
+      String(month + 1).padStart(2, "0"),
+      String(day).padStart(2, "0")
+    ].join("-");
+
+    const dayButton = document.createElement("button");
+    dayButton.type = "button";
+    dayButton.className = "calendar-day";
+    dayButton.textContent = day;
+
+    const hasBill = bills.some(bill => bill.due === dateKey);
+    if (hasBill) dayButton.classList.add("has-bill");
+    if (
+      today.getFullYear() === year &&
+      today.getMonth() === month &&
+      today.getDate() === day
+    ) dayButton.classList.add("today");
+
+    if (selectedCalendarDate === dateKey) {
+      dayButton.classList.add("selected");
+    }
+
+    dayButton.addEventListener("click", () => {
+      selectedCalendarDate = dateKey;
+      renderDueCalendar();
+      showBillsForCalendarDate(dateKey);
+    });
+
+    calendarDays.appendChild(dayButton);
+  }
+
+  if (selectedCalendarDate) {
+    showBillsForCalendarDate(selectedCalendarDate);
+  }
+}
+
+function showBillsForCalendarDate(dateKey) {
+  calendarBills.replaceChildren();
+
+  const matchingBills = bills.filter(bill => bill.due === dateKey);
+  const heading = document.createElement("h3");
+  heading.textContent = "Bills for " + dateKey;
+  calendarBills.appendChild(heading);
+
+  if (matchingBills.length === 0) {
+    const message = document.createElement("p");
+    message.textContent = "Walang bill sa petsang ito.";
+    calendarBills.appendChild(message);
+    return;
+  }
+
+  matchingBills.forEach(bill => {
+    const item = document.createElement("p");
+    item.textContent =
+      bill.name + " — ₱" + Number(bill.amount).toFixed(2) +
+      (bill.paid ? " · PAID" : " · UNPAID");
+    calendarBills.appendChild(item);
+  });
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  calendarDate.setMonth(calendarDate.getMonth() - 1);
+  renderDueCalendar();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  calendarDate.setMonth(calendarDate.getMonth() + 1);
+  renderDueCalendar();
+});
+
+renderDueCalendar();
 
 function checkDueReminders() {
   if (!("Notification" in window)) return;
