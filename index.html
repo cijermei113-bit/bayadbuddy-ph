@@ -179,6 +179,9 @@ body.dark-mode li {
 <div class="dashboard">
   <h2>Monthly Bills Dashboard</h2>
 
+<label for="reportMonth">Select Month:</label>
+<input type="month" id="reportMonth">
+
   <div class="dashboard-card">
     <h3>This Month's Bills</h3>
     <p id="monthlyTotal">₱0.00</p>
@@ -272,21 +275,18 @@ function render() {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
-    const monthlyBills = bills.filter(bill => {
-      if (!bill.due) return false;
+   
+const reportMonthInput = document.getElementById("reportMonth");
+const selectedMonth = reportMonthInput && reportMonthInput.value
+  ? reportMonthInput.value
+  : new Date().getFullYear() + "-" +
+    String(new Date().getMonth() + 1).padStart(2, "0");
 
-      const dueDate = new Date(bill.due + "T00:00:00");
+const monthlyBills = bills.filter(bill => {
+  if (!bill.due) return false;
+  return bill.due.slice(0, 7) === selectedMonth;
+});
 
-      return !isNaN(dueDate.getTime()) &&
-        dueDate.getMonth() === currentMonth &&
-        dueDate.getFullYear() === currentYear;
-    });
-
-    const formatPHP = amount =>
-      amount.toLocaleString("en-PH", {
-        style: "currency",
-        currency: "PHP"
-      });
 
     document.getElementById("monthlyTotal").textContent =
       formatPHP(monthlyBills.reduce((sum, bill) => sum + bill.amount, 0));
@@ -377,6 +377,14 @@ details.textContent = "Due: " + bill.due +
 function save() {
   localStorage.setItem("bayadbuddy-bills", JSON.stringify(bills));
   render();
+}
+
+const reportMonthSelector = document.getElementById("reportMonth");
+
+if (reportMonthSelector) {
+  reportMonthSelector.addEventListener("change", function () {
+    render();
+  });
 }
 
 document.getElementById("form").addEventListener("submit", event => {
