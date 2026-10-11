@@ -679,6 +679,7 @@ if (!bill.due || isNaN(new Date(bill.due + "T00:00:00").getTime())) {
   if (daysLeft < 0) {
     statusText = "OVERDUE";
     status.classList.add("status-overdue");
+    item.classList.add("overdue-bill");
   } else if (daysLeft <= 3) {
     statusText = daysLeft === 0 ? "DUE TODAY" : "DUE SOON";
     status.classList.add("status-due-soon");
