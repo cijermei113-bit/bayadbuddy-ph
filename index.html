@@ -147,5 +147,31 @@ document.getElementById("form").addEventListener("submit", event => {
 
 render();
 </script>
+
+<button id="exportBillsBtn" type="button">Export Bills (Backup)</button>
+
+<script>
+document.getElementById("exportBillsBtn").addEventListener("click", function () {
+  const bills = localStorage.getItem("bayadbuddy-bills");
+
+  if (!bills) {
+    alert("Walang bill data na makikita para i-backup.");
+    return;
+  }
+
+  const blob = new Blob([bills], {
+    type: "application/json"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bayadbuddy-bills-backup.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+});
+</script>
 </body>
 </html>
