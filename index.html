@@ -678,6 +678,7 @@ details.appendChild(status);
     const toggle = document.createElement("button");
     toggle.textContent = bill.paid
       ? "Mark unpaid" : "Mark paid";
+    toggle.classList.add("payment-button");
     toggle.onclick = () => {
       bills[index].paid = !bills[index].paid;
       save();
