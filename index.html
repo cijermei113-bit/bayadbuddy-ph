@@ -694,6 +694,7 @@ if (!bill.due || isNaN(new Date(bill.due + "T00:00:00").getTime())) {
   } else if (daysLeft <= 3) {
     statusText = daysLeft === 0 ? "DUE TODAY" : "DUE SOON";
     status.classList.add("status-due-soon");
+    item.classList.add("due-soon-bill");
   } else {
     statusText = "UPCOMING";
     status.classList.add("status-upcoming");
