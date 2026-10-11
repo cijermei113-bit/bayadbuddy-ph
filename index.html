@@ -12,38 +12,96 @@
   <style>
    
 
- body {
-      font-family: Arial, sans-serif;
-      background: #f2f7fa;
-      color: #123b5d;
-      margin: 0;
-      padding: 20px;
+ 
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #eef8f7 0%, #f4f7fb 100%);
+  color: #123b5d;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+   
+main {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding-bottom: 24px;
+}
+
+   
+.card {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #e5edf5;
+  box-shadow: 0 6px 20px rgba(18, 59, 93, 0.07);
+  transition: box-shadow 0.2s ease;
+}
+
+.card h1 {
+  font-size: 28px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+
+.card h2 {
+  font-size: 20px;
+  margin-top: 18px;
+  margin-bottom: 12px;
+}
+
+.card p {
+  line-height: 1.6;
+}
+
     }
-    main {
-      max-width: 500px;
-      margin: auto;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 18px;
-      margin-bottom: 16px;
-    }
-    input, button {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin: 6px 0;
-      border-radius: 10px;
-      border: 1px solid #ccd8e0;
-      font-size: 16px;
-    }
-    button {
-      background: #22a699;
-      color: white;
-      border: 0;
-      font-weight: bold;
-    }
+    
+input, button, select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  border: 1px solid #ccd8e0;
+  font-size: 16px;
+}
+
+input, select {
+  background: #ffffff;
+  color: #123b5d;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #22a699;
+  box-shadow: 0 0 0 3px rgba(34, 166, 153, 0.15);
+}
+
+   
+button {
+  background: linear-gradient(135deg, #22a699, #168b80);
+  color: #ffffff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(34, 166, 153, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  box-shadow: 0 6px 14px rgba(34, 166, 153, 0.28);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
     li { margin: 12px 0; overflow-wrap: anywhere; }
     .amount { font-weight: bold; }
  
