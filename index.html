@@ -255,4 +255,36 @@ document.getElementById("backupFileInput").addEventListener("change", async func
 
 </script>
 </body>
+<div style="margin: 16px 0;">
+  <button id="enableRemindersBtn" type="button">
+    Enable Bill Reminders
+  </button>
+  <p id="reminderMessage">
+    I-enable ang notifications para makatanggap ng bill reminders habang suportado ng browser.
+  </p>
+</div>
+
+<script>
+document.getElementById("enableRemindersBtn").addEventListener("click", async function () {
+  const message = document.getElementById("reminderMessage");
+
+  if (!("Notification" in window)) {
+    message.textContent = "Hindi suportado ng browser ang notifications.";
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  if (permission === "granted") {
+    new Notification("BayadBuddy PH", {
+      body: "Naka-enable na ang notifications. Buksan ang app para tingnan ang mga due at overdue bills."
+    });
+    message.textContent = "Naka-enable na ang notifications sa browser na ito.";
+  } else {
+    message.textContent = "Hindi pinayagan ang notifications. Maaari mo itong baguhin sa browser settings.";
+  }
+});
+</script>
+</body>
+
 </html>
