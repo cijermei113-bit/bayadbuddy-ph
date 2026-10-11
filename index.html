@@ -176,30 +176,53 @@ document.getElementById("form").addEventListener("submit", event => {
 render();
 
 function checkDueReminders() {
+  
+function checkDueReminders() {
   if (!("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const dueBills = bills.filter(bill => {
-    if (bill.paid || !bill.due) return false;
+  const dueSoon = [];
+  const dueNowOrOverdue = [];
+
+  bills.forEach(bill => {
+    if (bill.paid || !bill.due) return;
 
     const dueDate = new Date(bill.due + "T00:00:00");
-    if (isNaN(dueDate.getTime())) return false;
+    if (isNaN(dueDate.getTime())) return;
 
     dueDate.setHours(0, 0, 0, 0);
-    return dueDate.getTime() <= today.getTime();
+
+    const daysLeft = Math.round(
+      (dueDate.getTime() - today.getTime()) / 86400000
+    );
+
+    if (daysLeft === 3) {
+      dueSoon.push(bill);
+    } else if (daysLeft <= 0) {
+      dueNowOrOverdue.push(bill);
+    }
   });
 
-  if (dueBills.length > 0) {
+  if (dueSoon.length > 0) {
+    new Notification("BayadBuddy PH: Due in 3 Days", {
+      body: dueSoon.length === 1
+        ? "May 1 unpaid bill na due in 3 days. Buksan ang app para tingnan."
+        : "May " + dueSoon.length + " unpaid bills na due in 3 days. Buksan ang app para tingnan."
+    });
+  }
+
+  if (dueNowOrOverdue.length > 0) {
     new Notification("BayadBuddy PH: Bill Reminder", {
-      body: dueBills.length === 1
+      body: dueNowOrOverdue.length === 1
         ? "May 1 unpaid bill na due today o overdue. Buksan ang app para tingnan."
-        : "May " + dueBills.length + " unpaid bills na due today o overdue. Buksan ang app para tingnan."
+        : "May " + dueNowOrOverdue.length + " unpaid bills na due today o overdue. Buksan ang app para tingnan."
     });
   }
 }
+
 
 checkDueReminders();
 </script>
