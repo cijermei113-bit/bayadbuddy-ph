@@ -197,7 +197,13 @@ if ("serviceWorker" in navigator) {
         step="0.01" placeholder="Amount in pesos" required>
       <label for="due">Due date</label>
       <input id="due" type="date" required>
-      <button type="submit">Save bill</button>
+   
+<label for="recurring">Repeat bill:</label>
+<select id="recurring">
+  <option value="none">One-time bill</option>
+  <option value="monthly">Every month</option>
+</select>
+   <button type="submit">Save bill</button>
     </form>
   </div>
 
@@ -339,6 +345,8 @@ document.getElementById("form").addEventListener("submit", event => {
     
 name: document.getElementById("name").value.trim(),
 category: document.getElementById("category").value,
+
+recurring: document.getElementById("recurring").value,
 amount: Number(document.getElementById("amount").value),
 due: document.getElementById("due").value,
 paid: false
@@ -504,82 +512,77 @@ function checkDueReminders() {
 
 
 checkDueReminders();
-</script>
 
-<button id="exportBillsBtn" type="button">Export Bills (Backup)</button>
 
-<script>
-document.getElementById("exportBillsBtn").addEventListener("click", function () {
-  const bills = localStorage.getItem("bayadbuddy-bills");
+function getNextMonthlyDue(due) {
+  const parts = due.split("-").map(Number);
+  const year = parts[0];
+  const month = parts[1] - 1;
+  const day = parts[2];
 
-  if (!bills) {
-    alert("Walang bill data na makikita para i-backup.");
-    return;
-  }
+  const nextMonth = new Date(year, month + 1, 1);
+  const lastDay = new Date(
+    nextMonth.getFullYear(),
+    nextMonth.getMonth() + 1,
+    0
+  ).getDate();
 
-  const blob = new Blob([bills], {
-    type: "application/json"
+  nextMonth.setDate(Math.min(day, lastDay));
+
+  return [
+    nextMonth.getFullYear(),
+    String(nextMonth.getMonth() + 1).padStart(2, "0"),
+    String(nextMonth.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function processMonthlyBills() {
+  const now = new Date();
+  const currentMonth =
+    now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0");
+
+  const originalBills = [...bills];
+  let changed = false;
+
+  originalBills.forEach(bill => {
+    if (bill.recurring !== "monthly" || !bill.due) return;
+    if (bill.due.slice(0, 7) >= currentMonth) return;
+
+    let nextDue = bill.due;
+
+    while (nextDue.slice(0, 7) < currentMonth) {
+      nextDue = getNextMonthlyDue(nextDue);
+    }
+
+    const exists = bills.some(other =>
+      other !== bill &&
+      other.name === bill.name &&
+      other.due === nextDue &&
+      other.recurring === "monthly"
+    );
+
+    if (!exists) {
+      bills.push({
+        name: bill.name,
+        category: bill.category || "Other",
+        amount: Number(bill.amount),
+        due: nextDue,
+        paid: false,
+        recurring: "monthly"
+      });
+      changed = true;
+    }
   });
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "bayadbuddy-bills-backup.json";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-});
-</script>
-
-<button id="importBillsBtn" type="button">Import / Restore Backup</button>
-<input id="backupFileInput" type="file" accept=".json,application/json" hidden>
-
-<script>
-
-document.getElementById("importBillsBtn").addEventListener("click", function () {
-  document.getElementById("backupFileInput").click();
-});
-
-document.getElementById("backupFileInput").addEventListener("change", async function (event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  try {
-    const text = await file.text();
-    const parsed = JSON.parse(text);
-
-    if (!Array.isArray(parsed)) {
-      alert("Hindi tugma ang backup file. Walang binagong data.");
-      return;
-    }
-
-    const validBills = parsed.every(bill =>
-      bill &&
-      typeof bill === "object" &&
-      !Array.isArray(bill)
-    );
-
-    if (!validBills) {
-      alert("May maling format sa backup file. Walang binagong data.");
-      return;
-    }
-
-    const confirmed = confirm(
-      "I-restore ang backup? Maaaring mapalitan ang kasalukuyang bill records. Siguraduhing may backup ka muna."
-    );
-
-    if (!confirmed) return;
-
-    localStorage.setItem("bayadbuddy-bills", JSON.stringify(parsed));
-    alert("Na-restore ang backup. I-reload ang app para makita ang resulta.");
-    location.reload();
-  } catch (error) {
-    alert("Hindi mabasa ang backup file. Walang binagong data.");
-  } finally {
-    event.target.value = "";
+  if (changed) {
+    localStorage.setItem("bayadbuddy-bills", JSON.stringify(bills));
   }
-});
+}
+
+processMonthlyBills();
+render();
+
 
 </script>
 
