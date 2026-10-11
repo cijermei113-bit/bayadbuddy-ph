@@ -264,6 +264,13 @@ try {
   bills = [];
 }
 
+function formatPHP(amount) {
+  return "₱" + Number(amount).toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
 function render() {
   document.getElementById("total").textContent =
     bills.filter(b => !b.paid)
