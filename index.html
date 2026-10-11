@@ -108,8 +108,36 @@ function render() {
     title.textContent = bill.name + " — ₱" +
       bill.amount.toFixed(2);
     const details = document.createElement("div");
-    details.textContent = "Due: " + bill.due +
-      (bill.paid ? " · PAID" : " · UNPAID");
+    
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const dueDate = new Date(bill.due + "T00:00:00");
+let dueStatus = "";
+
+if (!bill.due || isNaN(dueDate.getTime())) {
+  dueStatus = " · INVALID DUE DATE";
+} else {
+  dueDate.setHours(0, 0, 0, 0);
+  const daysLeft = Math.round(
+    (dueDate.getTime() - today.getTime()) / 86400000
+  );
+
+  if (bill.paid) {
+    dueStatus = " · PAID";
+  } else if (daysLeft < 0) {
+    dueStatus = " · OVERDUE";
+  } else if (daysLeft === 0) {
+    dueStatus = " · DUE TODAY";
+  } else {
+    dueStatus = " · DUE IN " + daysLeft + " DAYS";
+  }
+}
+
+details.textContent = "Due: " + bill.due +
+  (bill.paid ? " · PAID" : " · UNPAID") +
+  (bill.paid ? "" : dueStatus);
+;
     const toggle = document.createElement("button");
     toggle.textContent = bill.paid
       ? "Mark unpaid" : "Mark paid";
