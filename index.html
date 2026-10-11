@@ -687,6 +687,7 @@ if (!bill.due || isNaN(new Date(bill.due + "T00:00:00").getTime())) {
 } else if (bill.paid) {
   statusText = "PAID";
   status.classList.add("status-paid");
+  item.classList.add("paid-bill");
 } else {
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
