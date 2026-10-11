@@ -173,5 +173,58 @@ document.getElementById("exportBillsBtn").addEventListener("click", function () 
   URL.revokeObjectURL(url);
 });
 </script>
+
+<button id="importBillsBtn" type="button">Import / Restore Backup</button>
+<input id="backupFileInput" type="file" accept=".json,application/json" hidden>
+
+<script>
+
+document.getElementById("importBillsBtn").addEventListener("click", function () {
+  document.getElementById("backupFileInput").click();
+});
+
+document.getElementById("backupFileInput").addEventListener("change", async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+
+    if (!Array.isArray(parsed)) {
+      alert("Hindi tugma ang backup file. Walang binagong data.");
+      return;
+    }
+
+    const validBills = parsed.every(bill =>
+      bill &&
+      typeof bill === "object" &&
+      !Array.isArray(bill)
+    );
+
+    if (!validBills) {
+      alert("May maling format sa backup file. Walang binagong data.");
+      return;
+    }
+
+    const confirmed = confirm(
+      "I-restore ang backup? Maaaring mapalitan ang kasalukuyang bill records. Siguraduhing may backup ka muna."
+    );
+
+    if (!confirmed) return;
+
+    localStorage.setItem("bayadbuddy-bills", JSON.stringify(parsed));
+    alert("Na-restore ang backup. I-reload ang app para makita ang resulta.");
+    location.reload();
+  } catch (error) {
+    alert("Hindi mabasa ang backup file. Walang binagong data.");
+  } finally {
+    event.target.value = "";
+  }
+});
+
+</script>
+
+</script>
 </body>
 </html>
