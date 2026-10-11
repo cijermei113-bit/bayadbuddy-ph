@@ -286,6 +286,26 @@ body.dark-mode .amount {
   color: #5eead4;
 }
 
+body.dark-mode .status-paid {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark-mode .status-due-soon {
+  background: #78350f;
+  color: #fde68a;
+}
+
+body.dark-mode .status-overdue {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+body.dark-mode .status-upcoming {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
@@ -393,6 +413,24 @@ body.dark-mode .calendar-day:hover {
 .status-upcoming {
   background: #dbeafe;
   color: #1e40af;
+}
+
+/* Delete button */
+button.delete-button {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.18);
+}
+
+button.delete-button:hover {
+  background: #b91c1c;
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);
+}
+
+body.dark-mode button.delete-button {
+  background: #dc2626;
+  color: #ffffff;
 }
 
  </style>
@@ -646,6 +684,7 @@ details.appendChild(status);
     };
     const remove = document.createElement("button");
     remove.textContent = "Delete bill";
+    remove.classList.add("delete-button");
     remove.onclick = () => {
       bills.splice(index, 1);
       save();
